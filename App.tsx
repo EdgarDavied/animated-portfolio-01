@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { ProjectGrid } from './components/ProjectGrid';
+import { WorkProcess } from './components/WorkProcess';
 import { Footer } from './components/Footer';
 import { AnimationStage } from './types'; // Import AnimationStage
 
@@ -73,6 +74,11 @@ const App: React.FC = () => {
            </p>
         )}
         <ProjectGrid currentStage={currentStage} />
+        
+        {/* Work Process section - visible after projects are loaded */}
+        {currentStage >= AnimationStage.PROJECTS_FADE_IN && (
+          <WorkProcess isVisible={true} />
+        )}
       </main>
       
       <Footer />
