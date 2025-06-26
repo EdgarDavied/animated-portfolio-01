@@ -1,0 +1,5 @@
+{
+  "name": "Animated Portfolio Landing Page",
+  "description": "A self-contained portfolio landing page replicating the look, layout, and animations of a reference design. Features a multi-stage hero animation and project cards with hover effects.",
+  "requestFramePermissions": []
+}
