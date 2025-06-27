@@ -75,10 +75,10 @@ const App: React.FC = () => {
         )}
         <ProjectGrid currentStage={currentStage} />
         
-        {/* Work Process section - visible after projects are loaded */}
-        {currentStage >= AnimationStage.PROJECTS_FADE_IN && (
-          <WorkProcess isVisible={true} />
-        )}
+        {/* Work Process section - always visible and with higher z-index */}
+        <div style={{ width: '100%', position: 'relative', zIndex: 100 }}>
+          <WorkProcess />
+        </div>
       </main>
       
       <Footer />

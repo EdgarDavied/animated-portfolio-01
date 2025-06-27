@@ -1,14 +1,50 @@
-# Run and deploy your AI Studio app
+# Animated Portfolio Landing Page
 
-This contains everything you need to run your app locally.
+A minimalistic, monochromatic portfolio website built with React.js and Three.js featuring clean structure, subtle animations, and interactive elements.
 
-## Run Locally
+## Features
 
-**Prerequisites:**  Node.js
+- Monochromatic design with minimalist aesthetic
+- Scroll-driven animations using GSAP and ScrollTrigger
+- Responsive layout for all device sizes
+- Interactive elements with subtle hover effects
+- Clean component structure
 
+## Technologies Used
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+- React.js
+- TypeScript
+- GSAP for animations
+- Vite for build tooling
+
+## Running Locally
+
+**Prerequisites:** Node.js
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/konnel/animated-portfolio-landing-page.git
+   cd animated-portfolio-landing-page
+   ```
+
+2. Install dependencies:
+   ```
+   npm install
+   ```
+
+3. Run the development server:
+   ```
+   npm run dev
+   ```
+
+4. Build for production:
+   ```
+   npm run build
+   ```
+
+## Project Structure
+
+- `/components` - React components
+- `/public` - Static assets
+- `App.tsx` - Main application component
+- `index.tsx` - Application entry point
