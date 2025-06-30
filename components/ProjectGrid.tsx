@@ -94,13 +94,17 @@ export const ProjectGrid: React.FC<ProjectGridProps> = ({ currentStage }) => {
   }, [isVisible]);
 
   return (
-    <section 
-      id="works" 
-      aria-label="Featured Projects"
-      className={`w-full py-12 md:py-16 lg:py-24
-                  transition-opacity duration-1000 ease-in-out
-                  ${isVisible ? 'opacity-100' : 'opacity-0'}
-                  flex justify-center items-center`} // Centers the dock container
+    <section
+      id="works"
+      ref={containerRef}
+      className={`
+        w-full overflow-x-auto overflow-y-hidden
+        flex items-center gap-6 px-6 md:px-12 lg:px-24
+        transition-opacity duration-1000 ease-in-out relative z-10
+        ${isVisible ? 'opacity-100' : 'opacity-0'}
+        scrollbar-thin scrollbar-thumb-neutral-700 scrollbar-track-neutral-900
+        hover:scrollbar-thumb-neutral-600
+      `}
     >
       <div 
         ref={containerRef}

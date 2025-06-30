@@ -4,7 +4,9 @@ import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { ProjectGrid } from './components/ProjectGrid';
 import { WorkProcess } from './components/WorkProcess';
+import { RecentWork } from './components/RecentWork';
 import { Footer } from './components/Footer';
+import { TemplateShowcase } from './components/TemplateShowcase';
 import { AnimationStage } from './types'; // Import AnimationStage
 
 const App: React.FC = () => {
@@ -74,12 +76,22 @@ const App: React.FC = () => {
            </p>
         )}
         <ProjectGrid currentStage={currentStage} />
-        
-        {/* Work Process section - always visible and with higher z-index */}
-        <div style={{ width: '100%', position: 'relative', zIndex: 100 }}>
-          <WorkProcess />
-        </div>
       </main>
+
+      {/* Work Process section */}
+      <section className="w-full relative z-30 bg-neutral-950">
+        <WorkProcess isVisible={currentStage >= AnimationStage.PROJECTS_FADE_IN} />
+      </section>
+
+      {/* Recent Work section */}
+      <div className="w-full relative z-20">
+        <RecentWork isVisible={currentStage >= AnimationStage.PROJECTS_FADE_IN} />
+      </div>
+
+      {/* Template Showcase section */}
+      <div className="w-full relative z-20">
+        <TemplateShowcase isVisible={currentStage >= AnimationStage.PROJECTS_FADE_IN} />
+      </div>
       
       <Footer />
     </div>

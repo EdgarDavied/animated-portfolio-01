@@ -17,3 +17,16 @@ export enum AnimationStage {
   PROJECTS_FADE_IN,        // Project grid fades in
   COMPLETE                 // All initial animations are done
 }
+
+export interface Template {
+  id: number;
+  title: string;
+  image: string;
+  category: string;
+  description: string;
+  topLabel: string;
+}
+
+export interface TemplateShowcaseProps {
+  isVisible: boolean;
+}

@@ -52,3 +52,33 @@ export const NAV_LINKS = [
   { label: 'ABOUT', href: '#about' },
   { label: 'TEMPLATES', href: '#templates' },
 ];
+
+import { Template } from './types';
+
+export const TEMPLATES_DATA: Template[] = [
+  {
+    id: 1,
+    title: 'Wisdom Blog',
+    image: '/images/wisdom.jpg',
+    category: 'BLOG TEMPLATE',
+    description: 'We Write Things About Arts, Design, History, Politics & Science.',
+    topLabel: 'WISDOM'
+  },
+  {
+    id: 2,
+    title: 'Portfolio Pro',
+    image: '/images/portfolio.jpg',
+    category: 'PORTFOLIO TEMPLATE',
+    description: 'Showcase your creative work with this elegant, minimalist portfolio template.',
+    topLabel: 'PORTFOLIO'
+  },
+  {
+    id: 3,
+    title: 'Agency Flow',
+    image: '/images/agency.jpg',
+    category: 'AGENCY TEMPLATE',
+    description: 'A professional template for creative agencies and design studios.',
+    topLabel: 'AGENCY'
+  },
+  // Add more templates as needed
+];
