@@ -6,42 +6,42 @@ export const PROJECTS_DATA: Project[] = [
     id: '1', 
     title: 'DESIGN CLUB', 
     categories: ['WEBDESIGN', 'WEBFLOW'], 
-    imageUrl: 'https://picsum.photos/seed/designclub/800/600',
+    imageUrl: 'http://localhost:5173/images/wisdom.jpg',
     liveLink: '#'
   },
   { 
     id: '2', 
     title: 'JOYEUX REPAS', 
     categories: ['BRANDING', 'FOOD INDUSTRY'], 
-    imageUrl: 'https://picsum.photos/seed/joyeuxrepas/800/600',
+    imageUrl: 'http://localhost:5173/images/portfolio.jpg',
     liveLink: '#' 
   },
   { 
     id: '3', 
     title: 'STUDIO FUGU', 
     categories: ['LOCALIZATION', 'SAAS'], 
-    imageUrl: 'https://picsum.photos/seed/studiofugu/800/600',
+    imageUrl: 'http://localhost:5173/images/agency.jpg',
     liveLink: '#'
   },
   { 
     id: '4', 
     title: 'AKROLAB', 
     categories: ['CULTURE', 'CREATIVITY'], 
-    imageUrl: 'https://picsum.photos/seed/akrolab/800/600',
+    imageUrl: 'http://localhost:5173/images/wisdom.jpg',
     liveLink: '#'
   },
   { 
     id: '5', 
     title: 'FACTOR E', 
     categories: ['INNOVATION', 'IMPACT'], 
-    imageUrl: 'https://picsum.photos/seed/factore/800/600',
+    imageUrl: 'http://localhost:5173/images/portfolio.jpg',
     liveLink: '#'
   },
   { 
     id: '6', 
     title: 'DROP', 
     categories: ['SOCIAL', 'MARKETING'], 
-    imageUrl: 'https://picsum.photos/seed/drop/800/600',
+    imageUrl: 'http://localhost:5173/images/agency.jpg',
     liveLink: '#'
   },
 ];
@@ -59,7 +59,7 @@ export const TEMPLATES_DATA: Template[] = [
   {
     id: 1,
     title: 'Wisdom Blog',
-    image: '/images/wisdom.jpg',
+    image: 'http://localhost:5173/images/wisdom.jpg',
     category: 'BLOG TEMPLATE',
     description: 'We Write Things About Arts, Design, History, Politics & Science.',
     topLabel: 'WISDOM'
@@ -67,7 +67,7 @@ export const TEMPLATES_DATA: Template[] = [
   {
     id: 2,
     title: 'Portfolio Pro',
-    image: '/images/portfolio.jpg',
+    image: 'http://localhost:5173/images/portfolio.jpg',
     category: 'PORTFOLIO TEMPLATE',
     description: 'Showcase your creative work with this elegant, minimalist portfolio template.',
     topLabel: 'PORTFOLIO'
@@ -75,7 +75,7 @@ export const TEMPLATES_DATA: Template[] = [
   {
     id: 3,
     title: 'Agency Flow',
-    image: '/images/agency.jpg',
+    image: 'http://localhost:5173/images/agency.jpg',
     category: 'AGENCY TEMPLATE',
     description: 'A professional template for creative agencies and design studios.',
     topLabel: 'AGENCY'

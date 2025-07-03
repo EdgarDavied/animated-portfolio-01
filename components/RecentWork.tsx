@@ -17,11 +17,10 @@ export const RecentWork: React.FC<RecentWorkProps> = ({ isVisible = true }) => {
   const leftPreviewRef = useRef<HTMLDivElement>(null);
   const rightPreviewRef = useRef<HTMLDivElement>(null);
 
-  // Set first project as active by default
+  // Don't set any project as active by default - only show on hover
   useEffect(() => {
-    if (PROJECTS_DATA.length > 0) {
-      setActiveProject(PROJECTS_DATA[0].id);
-    }
+    // Initialize with no active project
+    setActiveProject(null);
   }, []);
 
   useEffect(() => {
@@ -30,7 +29,27 @@ export const RecentWork: React.FC<RecentWorkProps> = ({ isVisible = true }) => {
     // Initialize GSAP animations
     gsap.set(sectionRef.current, { opacity: 0 });
     gsap.set(projectsRef.current, { opacity: 0.3, y: 20 });
-    gsap.set([leftPreviewRef.current, rightPreviewRef.current], { opacity: 0, scale: 0.95 });
+    
+    // Initialize thumbnail scales only - let CSS handle container visibility
+    const projectContainers = document.querySelectorAll('.mb-16');
+    projectContainers.forEach((container) => {
+      // Get left and right preview containers
+      const leftPreview = container.querySelector('.md\\:block.w-1\\/4:first-of-type');
+      const rightPreview = container.querySelector('.md\\:flex.w-1\\/4:last-of-type');
+      
+      // Set initial states for thumbnails only - don't touch container opacity/position
+      if (leftPreview) {
+        const thumbnails = leftPreview.querySelectorAll('div.rounded-lg');
+        gsap.set(thumbnails, { scale: 1 });
+      }
+      
+      if (rightPreview) {
+        const thumbnail = rightPreview.querySelector('div.rounded-lg');
+        if (thumbnail) {
+          gsap.set(thumbnail, { scale: 1 });
+        }
+      }
+    });
 
     // Create scroll trigger animation
     const tl = gsap.timeline({
@@ -49,68 +68,83 @@ export const RecentWork: React.FC<RecentWorkProps> = ({ isVisible = true }) => {
       ease: 'power2.out',
     })
     .to(projectsRef.current, {
-      opacity: (i) => PROJECTS_DATA[i].id === activeProject ? 1 : 0.3,
+      opacity: 0.3, // All projects start with same opacity when no project is active
       y: 0,
       duration: 0.5,
       stagger: 0.1,
       ease: 'power2.out',
-    }, "-=0.4")
-    .to([leftPreviewRef.current, rightPreviewRef.current], {
-      opacity: 1,
-      scale: 1,
-      duration: 0.6,
-      stagger: 0.1,
-      ease: 'power2.out',
-    }, "-=0.3");
+    }, "-=0.4");
+    
+    // We don't animate the previews on initial load anymore
+    // They will be shown/hidden based on hover state via CSS transitions
 
     return () => {
       // Clean up ScrollTrigger instances
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
       tl.kill();
     };
-  }, [activeProject]);
+  }, [activeProject, isVisible]);
 
+  // Animation for project hover
   const handleProjectHover = (projectId: string) => {
+    // If already active, don't do anything
+    if (activeProject === projectId) return;
+    
     setActiveProject(projectId);
     const project = PROJECTS_DATA.find(p => p.id === projectId);
     
     if (!project) return;
 
-    // Animate left preview with slide-in and scale effect
-    gsap.to(leftPreviewRef.current, {
-      opacity: 1,
-      scale: 1,
-      x: 0,
-      duration: 0.6,
-      ease: 'power3.out',
-    });
+    // Find the project index and container
+    const projectIndex = PROJECTS_DATA.findIndex(p => p.id === projectId);
+    const projectContainers = document.querySelectorAll('.mb-16');
+    const projectContainer = projectContainers[projectIndex];
+    
+    if (!projectContainer) return;
+    
+    // The CSS transitions will handle showing/hiding the preview containers
+    // based on the activeProject state
+    
+    // Get the left and right preview containers for this project
+    const leftPreview = projectContainer.querySelector('.md\\:block.w-1\\/4:first-of-type');
+    const rightPreview = projectContainer.querySelector('.md\\:flex.w-1\\/4:last-of-type');
+    
+    // Animate thumbnails inside the left preview
+    if (leftPreview) {
+      const thumbnails = leftPreview.querySelectorAll('div.rounded-lg');
+      gsap.to(thumbnails, {
+        scale: 1.05,
+        duration: 0.4,
+        stagger: 0.08,
+        ease: 'power2.out',
+        delay: 0.1, // Small delay to let the container appear first
+      });
+    }
 
-    // Animate right preview with a different animation
-    gsap.to(rightPreviewRef.current, {
-      opacity: 1,
-      scale: 1,
-      x: 0,
-      duration: 0.6,
-      ease: 'power3.out',
-    });
+    // Animate thumbnail inside the right preview
+    if (rightPreview) {
+      const rightPreviewThumbnail = rightPreview.querySelector('div.rounded-lg');
+      gsap.to(rightPreviewThumbnail, {
+        scale: 1.05,
+        duration: 0.4,
+        ease: 'power2.out',
+        delay: 0.1, // Small delay to let the container appear first
+      });
+    }
 
-    // Create a more dramatic effect for project titles
+    // Animate project titles
     projectsRef.current.forEach((ref, index) => {
       if (ref) {
         const isActive = PROJECTS_DATA[index].id === projectId;
         
-        // More dramatic animation for active project
         gsap.to(ref, {
-          opacity: isActive ? 1 : 0.15,  // More contrast between active and inactive
-          scale: isActive ? 1.05 : 0.92,  // Subtle scale difference
-          x: isActive ? 30 : 0,           // More pronounced movement
-          fontWeight: isActive ? 'bold' : 'normal',
-          letterSpacing: isActive ? '0.02em' : 'normal',
-          duration: 0.5,
-          ease: 'power3.out',
+          opacity: isActive ? 1 : 0.15,
+          scale: isActive ? 1.03 : 0.95,
+          duration: 0.4,
+          ease: 'power2.out',
         });
         
-        // Add a subtle color animation for the active project
+        // Add a subtle glow effect for the active project
         if (isActive) {
           gsap.fromTo(ref, 
             { textShadow: 'none' },
@@ -125,13 +159,23 @@ export const RecentWork: React.FC<RecentWorkProps> = ({ isVisible = true }) => {
     });
   };
 
-  // We're not using handleProjectLeave anymore since we want to keep one project active at all times
+  // Reset active project when mouse leaves
   const handleProjectLeave = () => {
-    // Instead of resetting to null, we could optionally reset to the first project
-    // setActiveProject(PROJECTS_DATA[0].id);
+    // Set no project as active when mouse leaves
+    setActiveProject(null);
     
-    // Or we can keep the current active project
-    // This function is kept for potential future use
+    // Reset all project titles to default state
+    projectsRef.current.forEach((ref) => {
+      if (ref) {
+        gsap.to(ref, {
+          opacity: 0.3,
+          scale: 1,
+          textShadow: 'none',
+          duration: 0.4,
+          ease: 'power2.out',
+        });
+      }
+    });
   };
 
   return (
@@ -164,46 +208,96 @@ export const RecentWork: React.FC<RecentWorkProps> = ({ isVisible = true }) => {
         </span>
       </div>
 
-      {/* Project List and Previews Container */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 relative">
-        {/* Left Preview */}
-        <div
-          ref={leftPreviewRef}
-          className="hidden md:block md:col-span-4 sticky top-24 h-[70vh] overflow-hidden rounded-lg opacity-0 transform translate-x-[-20px]"
-          style={{ transformOrigin: 'center left' }}
-        >
-          {activeProject && (
-            <img
-              src={PROJECTS_DATA.find(p => p.id === activeProject)?.imageUrl}
-              alt="Project preview"
-              className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
-            />
-          )}
-        </div>
+      {/* Project List with Inline Previews */}
+      <div className="w-full max-w-6xl mx-auto">
+        {PROJECTS_DATA.map((project, index) => (
+          <div key={project.id} className="mb-16 relative">
+            {/* Project Row - Contains project name and previews */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8 relative">
+              {/* Left Preview Container - Only visible when this project is hovered */}
+              <div 
+                className={`hidden md:block w-1/4 ${activeProject === project.id ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform translate-x-[-20px]'} transition-all duration-400 ease-out ${activeProject === project.id ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                ref={index === 0 ? leftPreviewRef : undefined}
+              >
+                {/* Always show thumbnails, not just for active project */}
+                  <div className="flex flex-row gap-3 w-full">
+                    {/* First thumbnail */}
+                    <div className="w-1/2 aspect-[3/2] rounded-lg overflow-hidden shadow-md relative">
+                      <img
+                        src={`/images/${project.id === '1' ? 'wisdom.jpg' : project.id === '2' ? 'portfolio.jpg' : 'agency.jpg'}`}
+                        alt={`${project.title} preview 1`}
+                        className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                        onLoad={(e) => console.log(`Image loaded successfully: ${e.currentTarget.src}`)}
+                        onError={(e) => console.error(`Error loading image: ${e.currentTarget.src}`, e)}
+                      />
+                      <div className="text-xs text-white bg-black bg-opacity-50 p-1 absolute bottom-0 left-0 right-0">
+                        Using direct path: {`/images/${project.id === '1' ? 'wisdom.jpg' : project.id === '2' ? 'portfolio.jpg' : 'agency.jpg'}`}
+                      </div>
+                    </div>
+                    {/* Second thumbnail */}
+                    <div className="w-1/2 aspect-[3/2] rounded-lg overflow-hidden shadow-md relative">
+                      <img
+                        src={`/images/${project.id === '1' ? 'wisdom.jpg' : project.id === '2' ? 'portfolio.jpg' : 'agency.jpg'}`}
+                        alt={`${project.title} preview 2`}
+                        className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                        onLoad={(e) => console.log(`Image loaded successfully: ${e.currentTarget.src}`)}
+                        onError={(e) => console.error(`Error loading image: ${e.currentTarget.src}`, e)}
+                      />
+                      <div className="text-xs text-white bg-black bg-opacity-50 p-1 absolute bottom-0 left-0 right-0">
+                        Using direct path: {`/images/${project.id === '1' ? 'wisdom.jpg' : project.id === '2' ? 'portfolio.jpg' : 'agency.jpg'}`}
+                      </div>
+                    </div>
+                  </div>
 
-        {/* Project List */}
-        <div className="md:col-span-4 flex flex-col items-start justify-center space-y-12 py-12">
-          {PROJECTS_DATA.map((project, index) => (
-            <div
-              key={project.id}
-              ref={el => { projectsRef.current[index] = el; }}
-              className={`text-4xl md:text-5xl lg:text-6xl font-mono tracking-tight cursor-pointer transition-all duration-500 ease-out relative ${activeProject === project.id ? 'text-white' : 'text-neutral-500'}`}
-              onMouseEnter={() => handleProjectHover(project.id)}
-              onMouseLeave={handleProjectLeave}
-            >
-              <span className="relative z-10 inline-block">
-                {project.title}
-                {activeProject === project.id && (
-                  <span className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-white rounded-full opacity-70"></span>
-                )}
-              </span>
-              <div className="text-xs text-neutral-500 mt-2 tracking-wider">
-                {project.categories.join(' • ')}
+              </div>
+              
+              {/* Project Title - Center on mobile, between previews on desktop */}
+              <div 
+                className="w-full md:w-2/4 text-center"
+                ref={(el: HTMLDivElement | null) => { projectsRef.current[index] = el; }}
+                onMouseEnter={() => handleProjectHover(project.id)}
+                onMouseLeave={handleProjectLeave}
+              >
+                <div className={`text-4xl md:text-5xl lg:text-6xl font-mono tracking-tight cursor-pointer transition-all duration-500 ease-out relative ${activeProject === project.id ? 'text-white' : 'text-neutral-500'}`}>
+                  <span className="relative z-10 inline-block">
+                    {project.title}
+                    {activeProject === project.id && (
+                      <span className="absolute -left-4 top-1/2 transform -translate-y-1/2 w-2 h-2 bg-white rounded-full opacity-70"></span>
+                    )}
+                  </span>
+                </div>
+                <div className="text-xs text-neutral-500 mt-2 tracking-wider">
+                  {project.categories.join(' • ')}
+                </div>
+              </div>
+              
+              {/* Right Preview Container - Only visible when this project is hovered */}
+              <div 
+                className={`hidden md:flex w-1/4 ${activeProject === project.id ? 'opacity-100 transform translate-x-0' : 'opacity-0 transform translate-x-[20px]'} transition-all duration-400 ease-out ${activeProject === project.id ? 'pointer-events-auto' : 'pointer-events-none'}`}
+                ref={index === 0 ? rightPreviewRef : undefined}
+              >
+                {/* Single thumbnail on the right side */}
+                <div className="w-full">
+                  <div className="w-full aspect-[3/2] rounded-lg overflow-hidden shadow-md relative">
+                    <img
+                      src={`/images/${project.id === '1' ? 'wisdom.jpg' : project.id === '2' ? 'portfolio.jpg' : 'agency.jpg'}`}
+                      alt={`${project.title} preview`}
+                      className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
+                      onLoad={(e) => console.log(`Image loaded successfully: ${e.currentTarget.src}`)}
+                      onError={(e) => console.error(`Error loading image: ${e.currentTarget.src}`, e)}
+                    />
+                    <div className="text-xs text-white bg-black bg-opacity-50 p-1 absolute bottom-0 left-0 right-0">
+                      Using direct path: {`/images/${project.id === '1' ? 'wisdom.jpg' : project.id === '2' ? 'portfolio.jpg' : 'agency.jpg'}`}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-          ))}
-          
-          <a href="#works" className="mt-12 inline-flex items-center text-sm text-neutral-400 hover:text-white transition-colors duration-300 group">
+          </div>
+        ))}
+        
+        <div className="text-center mt-8">
+          <a href="#works" className="inline-flex items-center text-sm text-neutral-400 hover:text-white transition-colors duration-300 group">
             <span className="group-hover:underline">SEE ALL WORKS</span>
             <svg className="ml-2 w-4 h-4 transform group-hover:translate-x-1 transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -211,46 +305,23 @@ export const RecentWork: React.FC<RecentWorkProps> = ({ isVisible = true }) => {
             </svg>
           </a>
         </div>
-
-        {/* Right Preview - Floating UI Elements */}
-        <div
-          ref={rightPreviewRef}
-          className="hidden md:block md:col-span-4 sticky top-24 h-[70vh] overflow-hidden opacity-0 transform translate-x-[20px]"
-          style={{ transformOrigin: 'center right' }}
-        >
-          {activeProject && (
-            <div className="relative w-full h-full">
-              {/* Main image slightly rotated */}
-              <div className="absolute top-[10%] right-[5%] w-[80%] h-[60%] rounded-lg overflow-hidden shadow-2xl transform rotate-2 transition-all duration-700 hover:rotate-0">
-                <img
-                  src={PROJECTS_DATA.find(p => p.id === activeProject)?.imageUrl}
-                  alt="Project UI element"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              
-              {/* Secondary floating element */}
-              <div className="absolute bottom-[15%] left-[10%] w-[60%] h-[40%] rounded-lg overflow-hidden shadow-2xl transform -rotate-3 transition-all duration-700 hover:rotate-0">
-                <img
-                  src={PROJECTS_DATA.find(p => p.id === activeProject)?.imageUrl}
-                  alt="Project UI element"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </div>
-          )}
-        </div>
       </div>
       
       {/* Mobile preview (only visible on small screens) */}
       <div className="block md:hidden mt-8">
         {activeProject && (
-          <div className="rounded-lg overflow-hidden h-[40vh] shadow-lg">
+          <div className="rounded-lg overflow-hidden h-[40vh] shadow-lg relative">
             <img
-              src={PROJECTS_DATA.find(p => p.id === activeProject)?.imageUrl}
+              src={`/images/${activeProject === '1' ? 'wisdom.jpg' : activeProject === '2' ? 'portfolio.jpg' : 'agency.jpg'}`}
               alt="Project preview"
               className="w-full h-full object-cover"
+              id="mobile-preview-img"
+              onLoad={(e) => console.log(`Mobile image loaded successfully: ${e.currentTarget.src}`)}
+              onError={(e) => console.error(`Error loading mobile image: ${e.currentTarget.src}`, e)}
             />
+            <div className="text-xs text-white bg-black bg-opacity-50 p-1 absolute bottom-0 left-0 right-0">
+              Using direct path: {`/images/${activeProject === '1' ? 'wisdom.jpg' : activeProject === '2' ? 'portfolio.jpg' : 'agency.jpg'}`}
+            </div>
           </div>
         )}
         

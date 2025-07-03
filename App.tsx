@@ -7,6 +7,7 @@ import { WorkProcess } from './components/WorkProcess';
 import { RecentWork } from './components/RecentWork';
 import { Footer } from './components/Footer';
 import { TemplateShowcase } from './components/TemplateShowcase';
+import { TestImage } from './components/TestImage';
 import { AnimationStage } from './types'; // Import AnimationStage
 
 const App: React.FC = () => {
@@ -91,6 +92,12 @@ const App: React.FC = () => {
       {/* Template Showcase section */}
       <div className="w-full relative z-20">
         <TemplateShowcase isVisible={currentStage >= AnimationStage.PROJECTS_FADE_IN} />
+      </div>
+      
+      {/* Test Image Component for debugging */}
+      <div className="w-full max-w-6xl mx-auto px-6 py-12">
+        <h2 className="text-2xl font-light mb-6 text-white">Image Loading Test</h2>
+        <TestImage />
       </div>
       
       <Footer />
